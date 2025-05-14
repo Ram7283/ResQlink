@@ -56,8 +56,13 @@ app.use((req, res, next) => {
   } else {
     serveStatic(app);
     app.get("*", (req, res) => {
-      if (!req.path.startsWith("/api")) {
+      if (
+        !req.path.startsWith("/api") &&
+        !req.path.includes(".")
+      ) {
         res.sendFile(path.resolve("dist/public/index.html"));
+      } else {
+        res.status(404).send("Not found");
       }
     });
   }
