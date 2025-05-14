@@ -16,6 +16,7 @@ export default defineConfig({
         ]
       : []),
   ],
+  base: "./",
   resolve: {
     alias: {
       "@db": path.resolve(import.meta.dirname, "db"),

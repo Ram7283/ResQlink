@@ -1,3 +1,4 @@
+import path from "path";
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
@@ -54,6 +55,11 @@ app.use((req, res, next) => {
     await setupVite(app, server);
   } else {
     serveStatic(app);
+    app.get("*", (req, res) => {
+      if (!req.path.startsWith("/api")) {
+        res.sendFile(path.resolve("dist/public/index.html"));
+      }
+    });
   }
 
   // ALWAYS serve the app on port 5000
