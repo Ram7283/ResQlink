@@ -1647,18 +1647,11 @@ import { createServer as createViteServer, createLogger } from "vite";
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import path2 from "path";
-import runtimeErrorOverlay from "@replit/vite-plugin-runtime-error-modal";
 var vite_config_default = defineConfig({
   plugins: [
-    react(),
-    runtimeErrorOverlay(),
-    ...process.env.NODE_ENV !== "production" && process.env.REPL_ID !== void 0 ? [
-      await import("@replit/vite-plugin-cartographer").then(
-        (m) => m.cartographer()
-      )
-    ] : []
+    react()
   ],
-  base: "./",
+  base: "/",
   resolve: {
     alias: {
       "@db": path2.resolve(import.meta.dirname, "db"),
@@ -1781,11 +1774,12 @@ app.use((req, res, next) => {
     await setupVite(app, server);
   } else {
     serveStatic(app);
-    app.get("*", (req, res) => {
-      if (!req.path.startsWith("/api") && !req.path.includes(".")) {
+    app.get("*", (req, res, next) => {
+      const ext = path4.extname(req.path);
+      if (!req.path.startsWith("/api") && ext === "") {
         res.sendFile(path4.resolve("dist/public/index.html"));
       } else {
-        res.status(404).send("Not found");
+        next();
       }
     });
   }

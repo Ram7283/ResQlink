@@ -3,6 +3,7 @@ import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 
+
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
@@ -55,14 +56,12 @@ app.use((req, res, next) => {
     await setupVite(app, server);
   } else {
     serveStatic(app);
-    app.get("*", (req, res) => {
-      if (
-        !req.path.startsWith("/api") &&
-        !req.path.includes(".")
-      ) {
+    app.get("*", (req, res, next) => {
+      const ext = path.extname(req.path);
+      if (!req.path.startsWith("/api") && ext === "") {
         res.sendFile(path.resolve("dist/public/index.html"));
       } else {
-        res.status(404).send("Not found");
+        next();
       }
     });
   }
